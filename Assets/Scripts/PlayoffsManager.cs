@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-
-public enum NumberOfPlayoffsTeams {n2, n3, n4, n5, n6};
-
 public class PlayoffsManager : MonoBehaviour
 {
-    public NumberOfPlayoffsTeams numberOfPlayoffsTeams;
+    public int numberOfPlayoffsTeams;
+
+    public bool playoffHasFinished = false;
 
     public GameObject playoffStandingPrefab;
 
@@ -36,27 +35,11 @@ public class PlayoffsManager : MonoBehaviour
         {
             SetPlayoffsStage();
 
-            /*
-            var team1And4 = new List<Team>();
-            team1And4.Add(_playoffsTeamList[0]);
-            team1And4.Add(_playoffsTeamList[3]);
-            _playoffsMatchesBestOf.Add(new LeagueMatchBestOf(5, team1And4));
-
-            var team2And3 = new List<Team>();
-            team2And3.Add(_playoffsTeamList[1]);
-            team2And3.Add(_playoffsTeamList[2]);
-            _playoffsMatchesBestOf.Add(new LeagueMatchBestOf(5, team2And3));
-
-            var team5And6 = new List<Team>();
-            team5And6.Add(_playoffsTeamList[4]);
-            team5And6.Add(_playoffsTeamList[5]);
-            _playoffsMatchesBestOf.Add(new LeagueMatchBestOf(5, team5And6));*/
-
-            CreateInitialUIforPlayoffs();
-
-            _hasSetMatches = true;
+            CreateInitialUIforPlayoffs(false);
 
             DebugLogOnPlayoffBestOfMatches();
+
+            _hasSetMatches = true;
         }
     }
 
@@ -81,13 +64,26 @@ public class PlayoffsManager : MonoBehaviour
         for(int x = 0; x < teamsToAdd.Count; x++)
         {
             _playoffsTeamList.Add(teamsToAdd[x]);
+            Debug.Log("Added one team to playoffs...");
         }
 
         _hasSetTeams = true;
     }
 
-    private void CreateInitialUIforPlayoffs()
+    public void CreateInitialUIforPlayoffs(bool deletePreviousUI)
     {
+        if (deletePreviousUI)
+        {
+            var listOfAllPreviousStandings = GameObject.FindGameObjectsWithTag("PlayoffStanding");
+
+            for(int x = 0; x < listOfAllPreviousStandings.Length; x++)
+            {
+                Destroy(listOfAllPreviousStandings[x]);
+            }
+
+            _playoffsStandingObjects = new List<GameObject>();
+        }
+
         var yValue = 100;
 
         var playoffsMenu = _UIOrganizer.leaguePlayoffsMenu;
@@ -115,8 +111,14 @@ public class PlayoffsManager : MonoBehaviour
 
     public void UpdateUIforPlayoffs()
     {
+        Debug.Log("UI Objects Count: " + _playoffsStandingObjects.Count);
+
+        Debug.Log("Matches BestOf Count: " + _playoffsMatchesBestOf.Count);
+
         for (int x = 0; x < _playoffsStandingObjects.Count; x++)
         {
+            Debug.Log("Updating UI with current X value: " + x);
+
             var team1 = _playoffsMatchesBestOf[x].ReturnTeamsPlaying()[0];
             var team2 = _playoffsMatchesBestOf[x].ReturnTeamsPlaying()[1];
 
@@ -135,41 +137,106 @@ public class PlayoffsManager : MonoBehaviour
 
     public void PlayNextSeries()
     {
+        Debug.Log("Tentando jogar a próxima série...");
         _playoffsMatchesBestOf[_currentSeries].PlayNextMatch();
     }
 
     public LeagueMatch ReturnCurrentMatchInSeries()
     {
-        Debug.Log("Current Series: " + _currentSeries);
-        Debug.Log("Bagulho bugado: " + _playoffsMatchesBestOf[_currentSeries].ReturnCurrentLeagueMatch());
+        Debug.Log("Current Series: " + _currentSeries);/*
+        Debug.Log("Bagulho bugado: " + _playoffsMatchesBestOf[_currentSeries].ReturnCurrentLeagueMatch());*/ 
         return _playoffsMatchesBestOf[_currentSeries].ReturnCurrentLeagueMatch();
     }
 
-    public void CheckIfCurrentSeriesIsOver()
+    public bool CheckIfCurrentSeriesIsOver()
     {
+        var _currentSeriesPlus = _currentSeries + 1;
+
+        Debug.Log("Tamanho do BestOfMatches: " + _playoffsMatchesBestOf.Count + " |CurrentSeries + 1: " + _currentSeriesPlus);
+
         if (_playoffsMatchesBestOf[_currentSeries].ReturnBestOfWinner() != -1)
         {
-            _currentSeries++;
+            if (_currentSeriesPlus < _playoffsMatchesBestOf.Count)
+            {
+                _currentSeries++;
+            }
+            else
+            {
+                Debug.Log("Retornando como True pra criar as próximas matchups do Playoff...");
+
+                return true;
+            }
         }
 
-        Debug.Log("CURRENT SERIES: " + _currentSeries);
+        return false;
+        //Debug.Log("CURRENT SERIES: " + _currentSeries);
     }
 
     private void SetPlayoffsStage()
     {
-        switch (numberOfPlayoffsTeams)
+        //tem que na verdade primeiro verificar se o valor é par ou impar
+        //Do jeito que ta agora, só funciona com os brackets que estão com aqueles números especificos
+
+        var teamsAdded = 0;
+
+        var team1and2 = new List<Team>();
+
+        for (int x = 0; x < numberOfPlayoffsTeams; x++)
         {
-            case NumberOfPlayoffsTeams.n2:
-                var team1and2 = new List<Team>();
-                team1and2.Add(_playoffsTeamList[0]);
-                team1and2.Add(_playoffsTeamList[1]);
+            team1and2.Add(_playoffsTeamList[x]);
+            teamsAdded++;
+
+            if (teamsAdded >= 2)
+            {
                 _playoffsMatchesBestOf.Add(new LeagueMatchBestOf(5, team1and2));
-            break;
+                team1and2 = new List<Team>();
+                teamsAdded = 0;
+            }
         }
     }
 
-    private void SetNextBestOfMatches()
+    public void SetNextMatchups()
     {
+        var teamsAdded = 0;
 
+        var team1and2 = new List<Team>();
+
+        var listToCopyFrom = new List<LeagueMatchBestOf>();
+
+        for (int x = 0; x < _playoffsMatchesBestOf.Count; x++)
+        {
+            if (_playoffsMatchesBestOf[x].ReturnBestOfWinner() != -1)
+            {
+                var teamsPlaying = _playoffsMatchesBestOf[x].ReturnTeamsPlaying();
+                team1and2.Add(teamsPlaying[_playoffsMatchesBestOf[x].ReturnBestOfWinner()]);
+                teamsAdded++;
+            }
+
+            if (teamsAdded >= 2)
+            {
+                listToCopyFrom.Add(new LeagueMatchBestOf(5, team1and2));
+                team1and2 = new List<Team>();
+                teamsAdded = 0;
+            }
+        }
+
+        Debug.Log("Teams Added Final Count: " + teamsAdded);
+
+        if(teamsAdded == 1)
+        {
+            playoffHasFinished = true;
+            _UIOrganizer.CreateNextMatchups();
+        }
+        else
+        {
+            _currentSeries = 0;
+
+            _playoffsMatchesBestOf = new List<LeagueMatchBestOf>();
+
+            for (int x = 0; x < listToCopyFrom.Count; x++)
+            {
+                _playoffsMatchesBestOf.Add(listToCopyFrom[x]);
+            }
+        }
     }
 }

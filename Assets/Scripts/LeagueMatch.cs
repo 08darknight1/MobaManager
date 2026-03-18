@@ -22,6 +22,8 @@ namespace Assets.Scripts
 
         private UIOrganizer _uiOrganizer;
 
+        private bool _accountedFor;
+
         public LeagueMatch(Team team1, Team team2)
         {
             _team1 = team1;

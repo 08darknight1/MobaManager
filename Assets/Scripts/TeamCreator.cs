@@ -264,8 +264,19 @@ public class TeamCreator : MonoBehaviour
         _randomTeamNames.Add("Doom Robots");
 
         /////-20
+        
+        _randomTeamNames.Add("Fogueirense");
+        _randomTeamNames.Add("Amigos do Yuri");
+        _randomTeamNames.Add("Ouro Verde");
+        _randomTeamNames.Add("Açougueiros da XV");
+        _randomTeamNames.Add("São Juracicaba");
 
+        _randomTeamNames.Add("Red5");
+        _randomTeamNames.Add("Thresher Maw");
+        _randomTeamNames.Add("Ghost of Zera");
+        _randomTeamNames.Add("Fist Fury");
+        _randomTeamNames.Add("A P 3 X");
+
+        /////-30
     }
-
-
 }

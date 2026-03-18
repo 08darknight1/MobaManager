@@ -10,13 +10,13 @@ public class UIOrganizer : MonoBehaviour
 
     public GameObject leagueStandingPrefab, leagueMatchUpPrefab;
 
-    public GameObject leagueStandingsMenu, leagueNextMatchesMenu, leagueMatchMenu, leagueEndNoPlayoffsMenu, leaguePlayoffsMenu;
+    public GameObject leagueStandingsMenu, leagueNextMatchesMenu, leagueMatchMenu, leagueEndScreenMenu, leaguePlayoffsMenu;
 
     public RectTransform matchLogRectTransform;
 
     public TextMeshProUGUI matchLogFullText;
 
-    public Button finishMatchButton;
+    public Button finishMatchButton, playMatchButton;
 
 
     private string matchLogFullTextString;
@@ -40,7 +40,7 @@ public class UIOrganizer : MonoBehaviour
         leagueStandingsMenu.SetActive(true);
         leagueMatchMenu.SetActive(false);
         leagueNextMatchesMenu.SetActive(false);
-        leagueEndNoPlayoffsMenu.SetActive(false);
+        leagueEndScreenMenu.SetActive(false);
         leaguePlayoffsMenu.SetActive(false);
         _leagueOrganizer = GameObject.Find("LeagueAdministrator").GetComponent<LeagueOrganizer>();
         _playoffsManager = GameObject.Find("LeagueAdministrator").GetComponent<PlayoffsManager>();
@@ -138,20 +138,21 @@ public class UIOrganizer : MonoBehaviour
                 newObj.transform.localPosition = new Vector3(-150, yPos, 0);
                 yPos -= yDecrease;
 
+                newObj.transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text = teams[0].ReturnTeamName();
+                newObj.transform.GetChild(2).gameObject.GetComponent<TextMeshProUGUI>().text = teams[1].ReturnTeamName();
+
+                var newObjText1 = newObj.transform.GetChild(1).gameObject.GetComponent<TextMeshProUGUI>();
+
                 if (allMatches[x].ReturnWinner() == 0)
                 {
-                    newObj.transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text = teams[0].ReturnTeamName() + " W ";
-                    newObj.transform.GetChild(2).gameObject.GetComponent<TextMeshProUGUI>().text = " L " + teams[1].ReturnTeamName();
+                    newObjText1.text = "W" + " X " + "L";
+                    newObjText1.alignment = TextAlignmentOptions.Flush;
+
                 }
                 else if (allMatches[x].ReturnWinner() == 1)
                 {
-                    newObj.transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text = teams[0].ReturnTeamName() + " L ";
-                    newObj.transform.GetChild(2).gameObject.GetComponent<TextMeshProUGUI>().text = " W " + teams[1].ReturnTeamName();
-                }
-                else
-                {
-                    newObj.transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text = teams[0].ReturnTeamName();
-                    newObj.transform.GetChild(2).gameObject.GetComponent<TextMeshProUGUI>().text = teams[1].ReturnTeamName();
+                    newObjText1.text = "L" + " X " + "W";
+                    newObjText1.alignment = TextAlignmentOptions.Flush;
                 }
 
                 _nextMatchesObjects.Add(newObj);
@@ -159,7 +160,7 @@ public class UIOrganizer : MonoBehaviour
         }
         else
         {
-            if (_leagueOrganizer.HasPlayoffs)
+            if (_leagueOrganizer.HasPlayoffs && !_playoffsManager.playoffHasFinished)
             {
                 _playoffsTime = true;
 
@@ -183,18 +184,20 @@ public class UIOrganizer : MonoBehaviour
                 _playoffsManager.SetTeams(newTeamsList);
 
                 leagueStandingsMenu.SetActive(false);
+
                 leaguePlayoffsMenu.SetActive(true);
             }
             else
             {
                 leagueStandingsMenu.SetActive(false);
-                leagueEndNoPlayoffsMenu.SetActive(true);
+                leaguePlayoffsMenu.SetActive(false);
+                leagueEndScreenMenu.SetActive(true);
 
                 var childList = new List<TextMeshProUGUI>();
 
-                for(int x = 0; x < leagueEndNoPlayoffsMenu.transform.childCount; x++)
+                for(int x = 0; x < leagueEndScreenMenu.transform.childCount; x++)
                 {
-                    var childTMPRO = leagueEndNoPlayoffsMenu.transform.GetChild(x).gameObject.GetComponent<TextMeshProUGUI>();
+                    var childTMPRO = leagueEndScreenMenu.transform.GetChild(x).gameObject.GetComponent<TextMeshProUGUI>();
                     childList.Add(childTMPRO);
                 }
 
@@ -244,8 +247,6 @@ public class UIOrganizer : MonoBehaviour
         }
         else
         {
-            _playoffsManager.CheckIfCurrentSeriesIsOver();
-
             var nextMatch = _playoffsManager.ReturnCurrentMatchInSeries();
 
             var nextMatchTeams = nextMatch.ReturnMatchTeams();
@@ -343,8 +344,17 @@ public class UIOrganizer : MonoBehaviour
         else
         {
             leagueMatchMenu.SetActive(false);
+
             leaguePlayoffsMenu.SetActive(true);
+
             _playoffsManager.UpdateUIforPlayoffs();
+
+            /*
+            if (_playoffsManager.CheckIfCurrentSeriesIsOver())
+            {
+                
+            }*/
+            //Preciso ver pra fazer o Update da UI dnv assim que acabar e fizer esse ultimo check
         }
     }
 
@@ -361,7 +371,6 @@ public class UIOrganizer : MonoBehaviour
     private void UpdateLeagueStandingsNumbers()
     {
         var allMatchesSoFar = _leagueOrganizer.ReturnMatchHistory();
-        var allMatchesSoFar2 = _leagueOrganizer.ReturnMatchHistory2();
 
         var trueMatchList = new List<LeagueMatch>();
 
@@ -370,17 +379,6 @@ public class UIOrganizer : MonoBehaviour
             if (allMatchesSoFar[x].ReturnWinner() != -1)
             {
                 trueMatchList.Add(allMatchesSoFar[x]);
-            }
-        }
-
-        if(allMatchesSoFar2 != null && allMatchesSoFar2.Count > 0)
-        {
-            for(int x = 0; x < allMatchesSoFar2.Count; x++)
-            {
-                if (allMatchesSoFar2[x].ReturnWinner() != -1)
-                {
-                    trueMatchList.Add(allMatchesSoFar2[x]);
-                }
             }
         }
 
@@ -528,5 +526,21 @@ public class UIOrganizer : MonoBehaviour
             _standingObjects[x].transform.localPosition = _standingsPositions[x];
         }
     }
-    
+
+    public void SetForNextPlayoffSeries()
+    {
+        if (_playoffsManager.CheckIfCurrentSeriesIsOver())
+        {
+            Debug.Log("Acabo essa porra...");
+            _playoffsManager.SetNextMatchups();
+            _playoffsManager.CreateInitialUIforPlayoffs(true);
+        }
+        else
+        {
+            leaguePlayoffsMenu.SetActive(false);
+            leagueMatchMenu.SetActive(true);
+            SetNextMatch();
+            playMatchButton.interactable = true;
+        }
+    }
 }

@@ -9,7 +9,7 @@ public class LeagueMatchBestOf
 
     private int _numberOfMatches, _currentMatch;
 
-    private int _team1Score, _team2Score;
+    private int[] _teamsScore;
 
     private int _winner;
 
@@ -19,21 +19,16 @@ public class LeagueMatchBestOf
     {
         _numberOfMatches = numberOfMatches; 
         _matchList = new List<LeagueMatch>();
+        _teamsScore = new int[2];
 
         for(int x = 0; x < _numberOfMatches; x++)
         {
             _matchList.Add(new LeagueMatch(teams[0], teams[1]));
         }
     }
-
-    public List<int> ReturnTeamsScore()
+    public int[] ReturnTeamsScore()
     {
-        var newList = new List<int>();
-
-        newList.Add(_team1Score);
-        newList.Add(_team2Score);
-
-        return newList;
+        return _teamsScore;
     }
 
     public List<Team> ReturnTeamsPlaying()
@@ -48,16 +43,27 @@ public class LeagueMatchBestOf
         AddPointsToTeam(matchWinner);
         _currentMatch++;
         CheckForSeriesWinner();
-
     }
 
     private void CheckForSeriesWinner()
     {
-        var winnerScore = ((_numberOfMatches - 1)/2) + 1;
+        /*
+        Debug.Log("MatchList Size: " + _matchList.Count);
+        Debug.Log("MatchList Size/2: " + _matchList.Count / 2);
+        Debug.Log("WinnerScore for this Best of Series: " + ((_numberOfMatches - 1) / 2) + 1);*/
 
-        if (_team1Score >= winnerScore || _team2Score >= winnerScore)
+        var winnerScore = (_matchList.Count / 2) + 1;
+
+        Debug.Log("WinnerScore is " + winnerScore + " | Team1Score: " + _teamsScore[0] + " | Team2Score: " + _teamsScore[1]);
+
+        for(int x = 0; x < _teamsScore.Length; x++)
         {
-            _over = true;
+            if(_teamsScore[x] >= winnerScore)
+            {
+                _winner = x;
+                _over = true;
+                break;
+            }
         }
     }
 
@@ -68,14 +74,7 @@ public class LeagueMatchBestOf
 
     private void AddPointsToTeam(int teamIndex)
     {
-        if(teamIndex == 0)
-        {
-            _team1Score++;
-        }
-        else
-        {
-            _team2Score++;
-        }
+        _teamsScore[teamIndex]++;
     }
 
     public int ReturnBestOfWinner()

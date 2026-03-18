@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
 namespace Assets.Scripts
 {

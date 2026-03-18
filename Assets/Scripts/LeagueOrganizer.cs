@@ -13,9 +13,9 @@ namespace Assets.Scripts
 
         private List<LeagueWeek> _weekList;
 
-        private List<LeagueMatch> _matchHistory1, _matchHistory2;
+        private List<LeagueMatch> _matchHistory;
 
-        private bool createWeeks, nineWeeksFlag;
+        private bool createWeeks;
 
         private int matchesRoundCont;
 
@@ -23,8 +23,7 @@ namespace Assets.Scripts
         {
             _teamCreator = GameObject.Find("LeagueAdministrator").GetComponent<TeamCreator>();
             _weekList = new List<LeagueWeek>();
-            _matchHistory1 = new List<LeagueMatch>();
-            _matchHistory2 = new List<LeagueMatch>(); 
+            _matchHistory = new List<LeagueMatch>();
         }
 
         void Update()
@@ -44,12 +43,7 @@ namespace Assets.Scripts
 
         public List<LeagueMatch> ReturnMatchHistory()
         {
-            return _matchHistory1;
-        }
-
-        public List<LeagueMatch> ReturnMatchHistory2()
-        {
-            return _matchHistory2;
+            return _matchHistory;
         }
 
         public List<LeagueMatch> ReturnMatchFromSpecificDayAndWeek(int week, int day)
@@ -66,16 +60,7 @@ namespace Assets.Scripts
 
                 for(int y = 0; y < weekDayList.Count; y++)
                 {
-                    if (nineWeeksFlag)
-                    {
-                        /////CHECANDO PARA O MATCHHISTORY 2
-                        SetAndAddMatchToList(_matchHistory2, weekDayList[y].ReturnMatchesList());
-                    }
-                    else
-                    {
-                        /////CHECANDO PARA O MATCH HISTORY 1
-                        SetAndAddMatchToList(_matchHistory1, weekDayList[y].ReturnMatchesList());
-                    }
+                    SetAndAddMatchToList(_matchHistory, weekDayList[y].ReturnMatchesList());
                 }
             }
         }
@@ -146,9 +131,8 @@ namespace Assets.Scripts
 
             matchesRoundCont++;
 
-            if (matchHistory.Count >= 45 && !nineWeeksFlag)
+            if (matchHistory.Count >= 45)
             {
-                nineWeeksFlag = true;
                 matchesRoundCont = 0;
             }
         }

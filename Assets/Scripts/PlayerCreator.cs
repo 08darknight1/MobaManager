@@ -31,13 +31,7 @@ namespace Assets.Scripts
                     roleSelected++;
                     roleCont = 0;
                 }
-                //_freePlayers[x].PrintPlayerStats(false);
             }
-            /*
-            for (int x = 0; x < _freePlayers.Count; x++)
-            {
-                _freePlayers[x].PrintPlayerStats(true);
-            }*/
 
             _readyToSharePlayers = true;
         }
