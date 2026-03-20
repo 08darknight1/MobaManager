@@ -143,8 +143,6 @@ namespace Assets.Scripts
                     //Debug.Log("Adding points to T2");
                 }
 
-                _uiOrganizer.UpdateTeamsScore(_pointsTeam1, _pointsTeam2);
-
                 _uiOrganizer.AddNewMessageToMatchLog(team1Name + " | " + _pointsTeam1 + " X " + _pointsTeam2 + " | " + team2Name);
 
                 //Debug.Log("(" + x + ") - - - SCORE: T1 -> " + _pointsTeam1 + " || " + _pointsTeam2 + " <- T2");
@@ -341,8 +339,6 @@ namespace Assets.Scripts
 
             objectives++;
 
-            _uiOrganizer.UpdateTeamsScore(_pointsTeam1, _pointsTeam2);
-
             _uiOrganizer.AddNewMessageToMatchLog(t1Name + " | " + _pointsTeam1 + " X " + _pointsTeam2 + " | " + t2Name);
         }
 
@@ -468,8 +464,6 @@ namespace Assets.Scripts
 
             objectives++;
 
-            _uiOrganizer.UpdateTeamsScore(_pointsTeam1, _pointsTeam2);
-
             _uiOrganizer.AddNewMessageToMatchLog(t1Name + " | " + _pointsTeam1 + " X " + _pointsTeam2 + " | " + t2Name);
         }
 
@@ -594,8 +588,6 @@ namespace Assets.Scripts
             }
 
             objectives++;
-
-            _uiOrganizer.UpdateTeamsScore(_pointsTeam1, _pointsTeam2);
         }
     }
 }

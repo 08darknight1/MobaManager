@@ -64,16 +64,16 @@ namespace Assets.Scripts
                 switch (_playerLevel)
                 {
                     case 1:
-                        _playerGameStats[x].SetStatCurrentValue(Random.Range(10, maxSkillValue - 75));
+                        _playerGameStats[x].SetStatCurrentValue(Random.Range(10, maxSkillValue - 50));
                     break;
                     case 2:
-                        _playerGameStats[x].SetStatCurrentValue(Random.Range(maxSkillValue - 75, maxSkillValue - 60));
+                        _playerGameStats[x].SetStatCurrentValue(Random.Range(maxSkillValue - 50, maxSkillValue - 40));
                     break;
                     case 3:
-                        _playerGameStats[x].SetStatCurrentValue(Random.Range(maxSkillValue - 60, maxSkillValue - 40));
+                        _playerGameStats[x].SetStatCurrentValue(Random.Range(maxSkillValue - 40, maxSkillValue - 30));
                     break;
                     case 4:
-                        _playerGameStats[x].SetStatCurrentValue(Random.Range(maxSkillValue - 40, maxSkillValue - 20));
+                        _playerGameStats[x].SetStatCurrentValue(Random.Range(maxSkillValue - 30, maxSkillValue - 20));
                     break;
                     case 5:
                         _playerGameStats[x].SetStatCurrentValue(Random.Range(maxSkillValue - 20, maxSkillValue));

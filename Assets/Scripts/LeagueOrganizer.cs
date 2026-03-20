@@ -65,6 +65,11 @@ namespace Assets.Scripts
             }
         }
 
+        public void AddPlayOffsMatch(LeagueMatch leagueMatch)
+        {
+            _matchHistory.Add(leagueMatch);
+        }
+
         private void SetAndAddMatchToList(List<LeagueMatch> matchHistory, List<LeagueMatch> dayMatches)
         {
             var teamsList = _teamCreator.ReturnTeamsSigned();

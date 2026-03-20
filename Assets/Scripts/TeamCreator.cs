@@ -74,17 +74,11 @@ public class TeamCreator : MonoBehaviour
         for(int x = 0; x < _teamsList.Count; x++)
         {
             var newRoster = RegisterNewTeamRoster(toplaners, jnglaners, midlaners, botlaners, suplaners);
-            /*
-            for(int z = 0; z < newRoster.Count; z++){
-
-            }*/
 
             for(int y = 0; y < newRoster.Count; y++)
             {
                 _teamsList[x].RegisterNewPlayer(newRoster[y]);
             }
-
-            //_teamsList[x].PrintTeamAndPlayers();
         }
 
         _setup++;
@@ -92,83 +86,48 @@ public class TeamCreator : MonoBehaviour
 
     private List<Player> RegisterNewTeamRoster(List<Player> toplist, List<Player> jnglist, List<Player> midlist, List<Player> botlist , List<Player> suplist)
     {
+        /*Debug.Log("TOP LIST SIZE: " + toplist.Count);
+        Debug.Log("JNG LIST SIZE: " + jnglist.Count);
+        Debug.Log("MID LIST SIZE: " + midlist.Count);
+        Debug.Log("BOT LIST SIZE: " + botlist.Count);
+        Debug.Log("SUP LIST SIZE: " + suplist.Count);*/
+
         var newTeam = new List<Player>();
+
+        var indexSelected = Random.Range(0, toplist.Count - 1);
 
         for (int x = 0; x < 5; x++)
         {
-            var roleCopy = new List<Player>();
-
-            var indexSelected = Random.Range(0, 4);
-
             switch (x)
             {
                 case 0:
-                    roleCopy = CopyPlayerList(toplist);
-                break;
-                case 1:
-                    roleCopy = CopyPlayerList(jnglist);
-                break;
-                case 2:
-                    roleCopy = CopyPlayerList(midlist);
-                break;
-                case 3:
-                    roleCopy = CopyPlayerList(botlist);
-                break;
-                case 4:
-                    roleCopy = CopyPlayerList(suplist);
-                break;
-            }
-
-            if (roleCopy.Count <= 3 && roleCopy.Count > 1)
-            {
-                indexSelected = Random.Range(0, 2);
-            }
-            else if (roleCopy.Count <= 1)
-            {
-                indexSelected = 0;
-            }
-            /*
-            Debug.Log("ROLE COPY SIZE: " + roleCopy.Count);
-
-            Debug.Log("INDEX SELECTED: " + indexSelected);*/
-
-            //roleCopy[indexSelected].PrintPlayerStats(false);
-
-            newTeam.Add(roleCopy[indexSelected]);
-
-            switch (x)
-            {
-                case 0:
+                    newTeam.Add(toplist[indexSelected]);
                     toplist.Remove(toplist[indexSelected]);
                 break;
                 case 1:
+                    indexSelected = Random.Range(0, jnglist.Count - 1);
+                    newTeam.Add(jnglist[indexSelected]);
                     jnglist.Remove(jnglist[indexSelected]);
                 break;
                 case 2:
+                    indexSelected = Random.Range(0, midlist.Count - 1);
+                    newTeam.Add(midlist[indexSelected]);
                     midlist.Remove(midlist[indexSelected]);
                 break;
                 case 3:
+                    indexSelected = Random.Range(0, botlist.Count - 1);
+                    newTeam.Add(botlist[indexSelected]);
                     botlist.Remove(botlist[indexSelected]);
                 break;
                 case 4:
+                    indexSelected = Random.Range(0, suplist.Count - 1);
+                    newTeam.Add(suplist[indexSelected]);
                     suplist.Remove(suplist[indexSelected]);
                 break;
             }
         }
 
         return newTeam;
-    }
-
-    private List<Player> CopyPlayerList(List<Player> teamToCopy)
-    {
-        var teamToCopyTo = new List<Player>();
-
-        for(int x = 0; x < teamToCopy.Count; x++)
-        {
-            teamToCopyTo.Add(teamToCopy[x]);
-        }
-
-        return teamToCopyTo;
     }
 
     private List<Player> GetAllPlayersFromSpecificPos(string role)

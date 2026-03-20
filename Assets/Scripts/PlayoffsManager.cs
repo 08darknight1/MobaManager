@@ -21,11 +21,16 @@ public class PlayoffsManager : MonoBehaviour
 
     private UIOrganizer _UIOrganizer;
 
+    private LeagueOrganizer _leagueOrganizer;
+
     private int _currentSeries;
 
     void Start()
     {
         _UIOrganizer = GameObject.Find("Canvas").GetComponent<UIOrganizer>();
+
+        _leagueOrganizer = gameObject.GetComponent<LeagueOrganizer>();
+
         _playoffsStandingObjects = new List<GameObject>();
     }
 
@@ -37,21 +42,7 @@ public class PlayoffsManager : MonoBehaviour
 
             CreateInitialUIforPlayoffs(false);
 
-            DebugLogOnPlayoffBestOfMatches();
-
             _hasSetMatches = true;
-        }
-    }
-
-    private void DebugLogOnPlayoffBestOfMatches()
-    {
-        Debug.Log("SIZE" + _playoffsMatchesBestOf.Count);
-
-        for(int x = 0; x <  _playoffsMatchesBestOf.Count; x++)
-        {
-            var teams = _playoffsMatchesBestOf[x].ReturnTeamsPlaying();
-
-            Debug.Log("X VALUE: " + x + " | MATCH: " + teams[0].ReturnTeamName() + " X " + teams[1].ReturnTeamName());
         }
     }
 
@@ -138,8 +129,10 @@ public class PlayoffsManager : MonoBehaviour
     public void PlayNextSeries()
     {
         Debug.Log("Tentando jogar a próxima série...");
+        _leagueOrganizer.AddPlayOffsMatch(_playoffsMatchesBestOf[_currentSeries].ReturnCurrentLeagueMatch());
         _playoffsMatchesBestOf[_currentSeries].PlayNextMatch();
     }
+
 
     public LeagueMatch ReturnCurrentMatchInSeries()
     {

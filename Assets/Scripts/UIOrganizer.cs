@@ -14,12 +14,14 @@ public class UIOrganizer : MonoBehaviour
 
     public RectTransform matchLogRectTransform;
 
-    public TextMeshProUGUI matchLogFullText;
+    public TextMeshProUGUI matchLogTextObject;
 
     public Button finishMatchButton, playMatchButton;
 
+    public float TimeBetweenMatchLogMessages;
 
-    private string matchLogFullTextString;
+
+    private string matchLogString;
 
     private LeagueOrganizer _leagueOrganizer;
 
@@ -35,6 +37,11 @@ public class UIOrganizer : MonoBehaviour
 
     private PlayoffsManager _playoffsManager;
 
+
+    private NewTimer _newTimer;
+
+    private List<string> _messagesToPrint = new List<string>();
+
     void Start()
     {
         leagueStandingsMenu.SetActive(true);
@@ -44,7 +51,8 @@ public class UIOrganizer : MonoBehaviour
         leaguePlayoffsMenu.SetActive(false);
         _leagueOrganizer = GameObject.Find("LeagueAdministrator").GetComponent<LeagueOrganizer>();
         _playoffsManager = GameObject.Find("LeagueAdministrator").GetComponent<PlayoffsManager>();
-        matchLogFullTextString = matchLogFullText.text;
+        matchLogString = matchLogTextObject.text;
+        _newTimer = gameObject.GetComponent<NewTimer>();
     }
 
     void Update()
@@ -63,17 +71,48 @@ public class UIOrganizer : MonoBehaviour
                     var rectLocalPos = matchLogRectTransform.transform.localPosition;
                     var newPos = new Vector3(rectLocalPos.x, matchLogRectTransform.sizeDelta.y, rectLocalPos.z);
                     matchLogRectTransform.transform.localPosition = newPos;
-                    _scrollLogText = false;
                 }
+
+                _scrollLogText = false;
             }
             else
             {
-                if (matchLogFullText.text.Length > matchLogFullTextString.Length)
+                if (matchLogTextObject.text.Length < matchLogString.Length)
                 {
-                    matchLogFullTextString = matchLogFullText.text;
+                    matchLogTextObject.text = matchLogString;
                     _scrollLogText = true;
                 }
             }
+        }
+
+        if(_messagesToPrint.Count > 0)
+        {
+            //Debug.Log("Next Message to Print: " + _messagesToPrint[0]);
+
+            finishMatchButton.interactable = false;
+
+            if (!_newTimer.RetornarIniciar())
+            {
+                _newTimer.Iniciar(TimeBetweenMatchLogMessages);
+            }
+            else if(_newTimer.Sinalizar())
+            {
+                var newMessage = _messagesToPrint[0];
+
+                var stringJump = "\n";
+                newMessage += stringJump;
+                newMessage += stringJump;
+
+                matchLogString += newMessage;
+
+                _messagesToPrint.RemoveAt(0);
+
+                _newTimer.Reiniciar();
+            }
+        }
+        else
+        {
+            finishMatchButton.interactable = true;
         }
     }
 
@@ -143,16 +182,12 @@ public class UIOrganizer : MonoBehaviour
 
                 var newObjText1 = newObj.transform.GetChild(1).gameObject.GetComponent<TextMeshProUGUI>();
 
-                if (allMatches[x].ReturnWinner() == 0)
+                if (allMatches[x].ReturnWinner() != -1)
                 {
-                    newObjText1.text = "W" + " X " + "L";
+                    var score = allMatches[x].ReturnTeamsPoints();
+                    newObjText1.text = score[0] + " X " + score[1];
                     newObjText1.alignment = TextAlignmentOptions.Flush;
 
-                }
-                else if (allMatches[x].ReturnWinner() == 1)
-                {
-                    newObjText1.text = "L" + " X " + "W";
-                    newObjText1.alignment = TextAlignmentOptions.Flush;
                 }
 
                 _nextMatchesObjects.Add(newObj);
@@ -231,19 +266,14 @@ public class UIOrganizer : MonoBehaviour
 
             var staticChanges = leagueMatchMenu.transform.GetChild(0);
 
-            var variableChanges = leagueMatchMenu.transform.GetChild(1);
-
             staticChanges.transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text = nextMatchTeams[0].ReturnTeamName();
             staticChanges.transform.GetChild(1).gameObject.GetComponent<TextMeshProUGUI>().text = nextMatchTeams[0].ReturnTeamOverrall().ToString();
 
             staticChanges.transform.GetChild(4).gameObject.GetComponent<TextMeshProUGUI>().text = nextMatchTeams[1].ReturnTeamName();
             staticChanges.transform.GetChild(3).gameObject.GetComponent<TextMeshProUGUI>().text = nextMatchTeams[1].ReturnTeamOverrall().ToString();
 
-            variableChanges.transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text = 0.ToString();
-            variableChanges.transform.GetChild(1).gameObject.GetComponent<TextMeshProUGUI>().text = 0.ToString();
-
-            matchLogFullText.text = "";
-            matchLogFullTextString = matchLogFullText.text;
+            matchLogTextObject.text = "";
+            matchLogString = matchLogTextObject.text;
         }
         else
         {
@@ -253,35 +283,20 @@ public class UIOrganizer : MonoBehaviour
 
             var staticChanges = leagueMatchMenu.transform.GetChild(0);
 
-            var variableChanges = leagueMatchMenu.transform.GetChild(1);
-
             staticChanges.transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text = nextMatchTeams[0].ReturnTeamName();
             staticChanges.transform.GetChild(1).gameObject.GetComponent<TextMeshProUGUI>().text = nextMatchTeams[0].ReturnTeamOverrall().ToString();
 
             staticChanges.transform.GetChild(4).gameObject.GetComponent<TextMeshProUGUI>().text = nextMatchTeams[1].ReturnTeamName();
             staticChanges.transform.GetChild(3).gameObject.GetComponent<TextMeshProUGUI>().text = nextMatchTeams[1].ReturnTeamOverrall().ToString();
 
-            variableChanges.transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text = 0.ToString();
-            variableChanges.transform.GetChild(1).gameObject.GetComponent<TextMeshProUGUI>().text = 0.ToString();
-
-            matchLogFullText.text = "";
-            matchLogFullTextString = matchLogFullText.text;
+            matchLogTextObject.text = "";
+            matchLogString = matchLogTextObject.text;
         }
     }
 
     public void AddNewMessageToMatchLog(string messageToAdd)
     {
-        matchLogFullText.text += messageToAdd;
-        var stringJump = "\n";
-        matchLogFullText.text += stringJump;
-        matchLogFullText.text += stringJump;
-    }
-
-    public void UpdateTeamsScore(int pointsForTeam1, int pointsForTeam2)
-    {
-        var variableChanges = leagueMatchMenu.transform.GetChild(1);
-        variableChanges.transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>().text = pointsForTeam1.ToString();
-        variableChanges.transform.GetChild(1).gameObject.GetComponent<TextMeshProUGUI>().text = pointsForTeam2.ToString();
+        _messagesToPrint.Add(messageToAdd);
     }
 
     public void PlaySelectedMatch()
@@ -302,8 +317,6 @@ public class UIOrganizer : MonoBehaviour
 
     public void FinishMatch()
     {
-        finishMatchButton.interactable = true;
-
         if (!_playoffsTime)
         {
             var currentMatches = _leagueOrganizer.ReturnMatchFromSpecificDayAndWeek(_currentWeek, _currentDay);
@@ -370,19 +383,7 @@ public class UIOrganizer : MonoBehaviour
 
     private void UpdateLeagueStandingsNumbers()
     {
-        var allMatchesSoFar = _leagueOrganizer.ReturnMatchHistory();
-
-        var trueMatchList = new List<LeagueMatch>();
-
-        for(int x = 0; x < allMatchesSoFar.Count; x++)
-        {
-            if (allMatchesSoFar[x].ReturnWinner() != -1)
-            {
-                trueMatchList.Add(allMatchesSoFar[x]);
-            }
-        }
-
-        //Debug.Log("TRUE MATCH LIST SIZE: " + trueMatchList.Count);
+        var matchlist = _leagueOrganizer.ReturnMatchHistory();
 
         for(int x = 0; x < _standingObjects.Count; x++)
         {
@@ -395,12 +396,12 @@ public class UIOrganizer : MonoBehaviour
             _standingObjects[x].transform.GetChild(7).gameObject.GetComponent<TextMeshProUGUI>().text = 0.ToString();
         }
 
-        for(int x = 0; x < trueMatchList.Count; x++)
+        for(int x = 0; x < matchlist.Count; x++)
         {
-            var t1Name = trueMatchList[x].ReturnMatchTeams()[0].ReturnTeamName();
-            var t2Name = trueMatchList[x].ReturnMatchTeams()[1].ReturnTeamName();
-            var matchPointsList = trueMatchList[x].ReturnTeamsPoints();
-            var winner = trueMatchList[x].ReturnWinner();
+            var t1Name = matchlist[x].ReturnMatchTeams()[0].ReturnTeamName();
+            var t2Name = matchlist[x].ReturnMatchTeams()[1].ReturnTeamName();
+            var matchPointsList = matchlist[x].ReturnTeamsPoints();
+            var winner = matchlist[x].ReturnWinner();
 
             var contToBreak = 0;
 
@@ -514,7 +515,6 @@ public class UIOrganizer : MonoBehaviour
         }
 
         _standingObjects = _standingObjects.OrderByDescending(e => int.Parse(e.transform.GetChild(2).gameObject.GetComponent<TextMeshProUGUI>().text)).
-        ThenByDescending(s => int.Parse(s.transform.GetChild(4).gameObject.GetComponent<TextMeshProUGUI>().text)).
         ThenByDescending(z => int.Parse(z.transform.GetChild(6).gameObject.GetComponent<TextMeshProUGUI>().text)).
         ThenByDescending(c => int.Parse(c.transform.GetChild(7).gameObject.GetComponent<TextMeshProUGUI>().text)).
         ToList();

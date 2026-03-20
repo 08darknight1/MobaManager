@@ -13,25 +13,41 @@ namespace Assets.Scripts
 
         private void Start()
         {
+            //Precisa sempre ter a mesma quantidade de nomes e nicknames
+
             AddStringToNameList();
             AddStringToNickNamesList();
 
             var roleCont = 0;
             var roleSelected = 0;
+            var namePoolSize = _randomNamesPool.Count;
 
-            for (int x = 0; x < _randomNamesPool.Count; x++)
+            for (int x = 0; x < namePoolSize; x++)
             {
-                var randomName = _randomNamesPool[Random.Range(0, _randomNamesPool.Count)];
-                var randomNickName = _randomNickNamesPool[Random.Range(0, _randomNamesPool.Count)];
-                var randomAge = Random.Range(16, 51);
+                //Debug.Log("RoleSelected :" + roleSelected + "| Role Count: " + roleCont);
+
+                var randomValue = Random.Range(0, _randomNamesPool.Count - 1);
+
+                var randomName = _randomNamesPool[randomValue];
+                _randomNamesPool.RemoveAt(randomValue);
+
+                var randomNickName = _randomNickNamesPool[randomValue];
+                _randomNickNamesPool.RemoveAt(randomValue);
+
+                var randomAge = Random.Range(16, 99);
+
                 _freePlayers.Add(new Player(randomName, randomAge, randomNickName, roleSelected));
+
                 roleCont++;
+
                 if(roleCont >= 10)
                 {
                     roleSelected++;
                     roleCont = 0;
                 }
             }
+
+            //Debug.Log("Free Players Size: " + _freePlayers.Count);
 
             _readyToSharePlayers = true;
         }
@@ -117,7 +133,20 @@ namespace Assets.Scripts
             _randomNamesPool.Add("Israel");
 
             /////-50
+           
+            _randomNamesPool.Add("Alex");
+            _randomNamesPool.Add("Alexis");
+            _randomNamesPool.Add("Aloc");
+            _randomNamesPool.Add("Alejo");
+            _randomNamesPool.Add("Alcides");
 
+            _randomNamesPool.Add("Axe");
+            _randomNamesPool.Add("Axel");
+            _randomNamesPool.Add("Alpis");
+            _randomNamesPool.Add("Alanis");
+            _randomNamesPool.Add("Alaves");
+
+            /////-60
         }
 
         private void AddStringToNickNamesList()
@@ -191,6 +220,20 @@ namespace Assets.Scripts
             _randomNickNamesPool.Add("rael1s");
 
             /////-50
+
+            _randomNickNamesPool.Add("xel-a");
+            _randomNickNamesPool.Add("leAxis");
+            _randomNickNamesPool.Add("C O L A");
+            _randomNickNamesPool.Add("joelA");
+            _randomNickNamesPool.Add("Cideal");
+
+            _randomNickNamesPool.Add("AX3");
+            _randomNickNamesPool.Add("Accels");
+            _randomNickNamesPool.Add("Alpines");
+            _randomNickNamesPool.Add("Alaninha003");
+            _randomNickNamesPool.Add("Salve");
+
+            /////-60
         }
     }
 }
