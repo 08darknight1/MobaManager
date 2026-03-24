@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 namespace Assets.Scripts
 {
@@ -7,6 +8,7 @@ namespace Assets.Scripts
     {
         private List<string> _randomNamesPool = new List<string>();
         private List<string> _randomNickNamesPool = new List<string>();
+        private List<string> _randomSurNamesPool = new List<string>();
         private List<Player> _freePlayers = new List<Player>();
 
         private bool _readyToSharePlayers;
@@ -15,8 +17,7 @@ namespace Assets.Scripts
         {
             //Precisa sempre ter a mesma quantidade de nomes e nicknames
 
-            AddStringToNameList();
-            AddStringToNickNamesList();
+            ReadNameList();
 
             var roleCont = 0;
             var roleSelected = 0;
@@ -62,178 +63,73 @@ namespace Assets.Scripts
             return _freePlayers;
         }
 
-        private void AddStringToNameList()
+        private void ReadNameList() 
         {
-            _randomNamesPool.Add("Ryan");
-            _randomNamesPool.Add("Philip");
-            _randomNamesPool.Add("Caio");
-            _randomNamesPool.Add("Jonas");
-            _randomNamesPool.Add("Fernando");
+            var TextAsset = Resources.Load("Imported\\ExcelNames") as TextAsset;
 
-            _randomNamesPool.Add("Hernandez");
-            _randomNamesPool.Add("Guilherme");
-            _randomNamesPool.Add("Paulo");
-            _randomNamesPool.Add("Bruno");
-            _randomNamesPool.Add("Alexandre");
+            if(TextAsset == null)
+            {
+                Debug.Log("Couldnt find file with names for the player...");
+            }
+            else
+            {
+                Debug.Log("File for the name of the players found!");
+            }
 
-            /////-10
-            
-            _randomNamesPool.Add("Eduardo");
-            _randomNamesPool.Add("Ricardo");
-            _randomNamesPool.Add("Johny");
-            _randomNamesPool.Add("Fagundes");
-            _randomNamesPool.Add("Juan");
+            string[] allTextFromFile = TextAsset.text.Split(new string[] {";","\n"}, System.StringSplitOptions.RemoveEmptyEntries);
 
-            _randomNamesPool.Add("Silva");
-            _randomNamesPool.Add("Gabriel");
-            _randomNamesPool.Add("Ademar");
-            _randomNamesPool.Add("Adriano");
-            _randomNamesPool.Add("Afonso");
+            int cont = 0;
 
-            /////-20
+            for (int x = 0; x < allTextFromFile.Length; x++)
+            {
+                //Debug.Log("Name found at [" + x + "]: " + allTextFromFile[x]);
 
-            _randomNamesPool.Add("Alberto");
-            _randomNamesPool.Add("Alice");
-            _randomNamesPool.Add("Baltazar");
-            _randomNamesPool.Add("Barbara");
-            _randomNamesPool.Add("Bernardo");
+                //If feito para ele pular as 3 primeiras categorias do cabeçalho
 
-            _randomNamesPool.Add("Caetano");
-            _randomNamesPool.Add("Carlos");
-            _randomNamesPool.Add("Camila");
-            _randomNamesPool.Add("Claudio");
-            _randomNamesPool.Add("Cristina");
+                if (x > 2)
+                {
+                    switch (cont)
+                    {
+                        case 0:
+                            _randomNamesPool.Add(allTextFromFile[x]);
+                            //Debug.Log("Added " + allTextFromFile[x] + " to 1st names list!");
+                            cont++;
+                            break;
+                        case 1:
+                            _randomNickNamesPool.Add(allTextFromFile[x]);
+                            //Debug.Log("Added " + allTextFromFile[x] + " to Nick Names list!");
+                            cont++;
+                            break;
+                        case 2:
+                            _randomSurNamesPool.Add(allTextFromFile[x]);
+                            //Debug.Log("Added " + allTextFromFile[x] + " to 2nd names list!");
+                            cont = 0;
+                            break;
+                    }
+                }
+            }
 
-            /////-30
-            
-            _randomNamesPool.Add("Dafne");
-            _randomNamesPool.Add("Dagoberto");
-            _randomNamesPool.Add("Daniel");
-            _randomNamesPool.Add("Djalma");
-            _randomNamesPool.Add("Douglas");
+            /*
+            Debug.Log("1st Names List Size: " + _randomNamesPool.Count);
 
-            _randomNamesPool.Add("Eliana");
-            _randomNamesPool.Add("Erica");
-            _randomNamesPool.Add("Evandro");
-            _randomNamesPool.Add("Ester");
-            _randomNamesPool.Add("Eustaquio");
+            for (int y = 0; y < _randomNamesPool.Count; y++)
+            {
+                Debug.Log("1st Names found[" + y + "]: " + _randomNamesPool[y]);
+            }
 
-            /////-40
-            
-            _randomNamesPool.Add("Habel");
-            _randomNamesPool.Add("Hamilton");
-            _randomNamesPool.Add("Helena");
-            _randomNamesPool.Add("Hermes");
-            _randomNamesPool.Add("Iago");
+            Debug.Log("NickNames List Size: " + _randomNickNamesPool.Count);
 
-            _randomNamesPool.Add("Iara");
-            _randomNamesPool.Add("Igor");
-            _randomNamesPool.Add("Isadora");
-            _randomNamesPool.Add("Ivete");
-            _randomNamesPool.Add("Israel");
+            for (int y = 0; y < _randomNickNamesPool.Count; y++)
+            {
+                Debug.Log("NickNames found[" + y + "]: " + _randomNickNamesPool[y]);
+            }
 
-            /////-50
-           
-            _randomNamesPool.Add("Alex");
-            _randomNamesPool.Add("Alexis");
-            _randomNamesPool.Add("Aloc");
-            _randomNamesPool.Add("Alejo");
-            _randomNamesPool.Add("Alcides");
+            Debug.Log("SurNames List Size: " + _randomSurNamesPool.Count);
 
-            _randomNamesPool.Add("Axe");
-            _randomNamesPool.Add("Axel");
-            _randomNamesPool.Add("Alpis");
-            _randomNamesPool.Add("Alanis");
-            _randomNamesPool.Add("Alaves");
-
-            /////-60
-        }
-
-        private void AddStringToNickNamesList()
-        {
-            _randomNickNamesPool.Add("Ry4n");
-            _randomNickNamesPool.Add("Philihp");
-            _randomNickNamesPool.Add("XioCa");
-            _randomNickNamesPool.Add("sanoj");
-            _randomNickNamesPool.Add("nandin");
-
-            _randomNickNamesPool.Add("dezHer");
-            _randomNickNamesPool.Add("GuiGui");
-            _randomNickNamesPool.Add("Opau1");
-            _randomNickNamesPool.Add("brn");
-            _randomNickNamesPool.Add("xander");
-
-            /////-10
-
-            _randomNickNamesPool.Add("duduQe");
-            _randomNickNamesPool.Add("ricarDeu5");
-            _randomNickNamesPool.Add("SilverFox");
-            _randomNickNamesPool.Add("gund3s");
-            _randomNickNamesPool.Add("j1");
-
-            _randomNickNamesPool.Add("ssalvo");
-            _randomNickNamesPool.Add("gab3");
-            _randomNickNamesPool.Add("dema5");
-            _randomNickNamesPool.Add("dridri");
-            _randomNickNamesPool.Add("fonfon");
-
-            /////-20
-
-            _randomNickNamesPool.Add("4lBeer");
-            _randomNickNamesPool.Add("crazy4lice");
-            _randomNickNamesPool.Add("AzrBalt");
-            _randomNickNamesPool.Add("barbs");
-            _randomNickNamesPool.Add("berni3");
-
-            _randomNickNamesPool.Add("tanCaeo");
-            _randomNickNamesPool.Add("carl1ns");
-            _randomNickNamesPool.Add("camcam");
-            _randomNickNamesPool.Add("audioClay");
-            _randomNickNamesPool.Add("tinaCHR");
-
-            /////-30
-
-            _randomNickNamesPool.Add("enfaD");
-            _randomNickNamesPool.Add("dog_0Bert");
-            _randomNickNamesPool.Add("nielAd");
-            _randomNickNamesPool.Add("alminhaDJ");
-            _randomNickNamesPool.Add("L4S_Doug");
-
-            _randomNickNamesPool.Add("ana314");
-            _randomNickNamesPool.Add("ricaEEE");
-            _randomNickNamesPool.Add("van_dro3");
-            _randomNickNamesPool.Add("aESThER");
-            _randomNickNamesPool.Add("EuSouTaquio");
-
-            /////-40
-
-            _randomNickNamesPool.Add("halibel<3");
-            _randomNickNamesPool.Add("rahmilt0n");
-            _randomNickNamesPool.Add("EnaFromHELL");
-            _randomNickNamesPool.Add("sherme");
-            _randomNickNamesPool.Add("IagaoDaMassa");
-
-            _randomNickNamesPool.Add("IaraAra");
-            _randomNickNamesPool.Add("IgorirogI");
-            _randomNickNamesPool.Add("dorai_SA");
-            _randomNickNamesPool.Add("vete1");
-            _randomNickNamesPool.Add("rael1s");
-
-            /////-50
-
-            _randomNickNamesPool.Add("xel-a");
-            _randomNickNamesPool.Add("leAxis");
-            _randomNickNamesPool.Add("C O L A");
-            _randomNickNamesPool.Add("joelA");
-            _randomNickNamesPool.Add("Cideal");
-
-            _randomNickNamesPool.Add("AX3");
-            _randomNickNamesPool.Add("Accels");
-            _randomNickNamesPool.Add("Alpines");
-            _randomNickNamesPool.Add("Alaninha003");
-            _randomNickNamesPool.Add("Salve");
-
-            /////-60
+            for (int y = 0; y < _randomSurNamesPool.Count; y++)
+            {
+                Debug.Log("SurNames found[" + y + "]: " + _randomSurNamesPool[y]);
+            }*/
         }
     }
 }
