@@ -2900,6 +2900,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 204b61a65a89f5e4ba0b7fcc77e4324e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  NumberOfPlayersToCreate: 50
 --- !u!114 &1433492400
 MonoBehaviour:
   m_ObjectHideFlags: 0

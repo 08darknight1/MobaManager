@@ -18,7 +18,7 @@ namespace Assets.Scripts
 
         private playerRole _playerRole;
 
-        public Player(string name, int age, string nickName, int playerRole) : base(name, age)
+        public Player(string firstName, string surName, int age, string nickName, int playerRole) : base(firstName, surName, age)
         {
             _nickName = nickName; 
             AddPlayerStatsToList();
@@ -90,7 +90,7 @@ namespace Assets.Scripts
         {
             if (printStats)
             {
-                Debug.Log(ReturnEntityName() + "`" + _nickName + "` ||ROLE: " + _playerRole.ToString() + " ||Overrall: " + _playerOverrall + " ||LVL: " + _playerLevel + " || STATS: ");
+                //Debug.Log(ReturnEntityName() + "`" + _nickName + "` ||ROLE: " + _playerRole.ToString() + " ||Overrall: " + _playerOverrall + " ||LVL: " + _playerLevel + " || STATS: ");
                 for (int x = 0; x < _playerGameStats.Count; x++)
                 {
                     Debug.Log(_playerGameStats[x].ReturnStatName() + ": " + _playerGameStats[x].ReturnStatCurrentValue());
@@ -98,7 +98,7 @@ namespace Assets.Scripts
             }
             else
             {
-                Debug.Log(ReturnEntityName() + "`" + _nickName + "` ||ROLE: " + _playerRole.ToString() + " ||Overrall: " + _playerOverrall + " ||LVL: " + _playerLevel);
+                //Debug.Log(ReturnEntityName() + "`" + _nickName + "` ||ROLE: " + _playerRole.ToString() + " ||Overrall: " + _playerOverrall + " ||LVL: " + _playerLevel);
             }
         }
 
